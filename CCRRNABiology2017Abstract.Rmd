@@ -1,0 +1,50 @@
+---
+title: Cloud-scale Gene Expression Quantification of Thousands of RNA-seq Samples
+author: Sean Davis, Genetics Branch, Center for Cancer Research, National Cancer Institute
+output: word_document
+bibliography: CCRRNABiology2017.bib
+---
+
+```{r init,include=FALSE,warning=FALSE,message=FALSE}
+library(magrittr)
+library(GenomicDataCommons)
+library(gdata)
+x = files(legacy=TRUE) %>%
+    filter(~ experimental_strategy == 'RNA-Seq'
+           & ((cases.project.program.name == 'TCGA' & data_format == 'FASTQ') |
+              (cases.project.program.name == 'CCLE' & data_format=='BAM'))) %>%
+    results_all() %>%
+    as.data.frame()
+nr = nrow(x)
+```
+
+Large-scale collection of genomic data is now common in cancer research and many such
+datasets are now available as public resources. Transferring these
+data resources over a network to local compute facilities is becoming
+more problematic as datasets grow. In addition, executing
+computational workflows over these massive datasets can effectively
+utilize massively scaleable infrastructures to enhance efficiency and
+timeliness of results. The National Cancer Institute (NCI) has
+recently established the NCI Genomic Data Commons as a repository for
+valuable cancer genomics datasets [@Grossman2016]. In addition, the
+NCI has funded three pilot projects to test the feasibility of
+processing genomic data using commercial cloud computing
+infrastructure and platforms. We have applied a state-of-the-art
+transcript and gene quantification method, Salmon [@Patro2017], to 
+`r nrow(x)` samples from the TCGA and CCLE projects at an average cost of less than $0.15 per sample. A total of 
+`r humanReadable(sum(x$file_size))` of data were processed to produce
+bias-corrected gene and transcript expression values. Cloud-based
+infrastructure was built using the Google Genomics Pipeline API
+[@GoogleGenomics]. The computational workflows were driven by the
+cRomwell R package [@cRomwell] and metadata for the TCGA and CCLE data
+collected and managed using the GenomicDataCommons package
+[@GenomicDataCommons]. Approximately 20,000 compute cores (the equivalent of 40% of Biowulf) and 5TB of total memory were simultaneously employed on the Google Compute Platform.
+Resulting files were processed further using Apache Spark, another
+distributed compute techology. To facilitate data mining and
+downstream analysis, all processed data were loaded into Google
+BigQuery massively scalable data warehouse. In summary, we have performed
+large-scale gene expression quantification as a proof-of-concept, scalable, next-generation computational analysis 
+that combines several distributed computing technologies with reproducible 
+and reusable computational research approaches that has yielded a data product
+that is immediately useful for cancer data science applications over the 
+entire TCGA and CCLE RNA-seq collections.
